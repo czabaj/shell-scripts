@@ -1,0 +1,52 @@
+# create common directories
+mkdir ~/Development
+mkdir ~/Apps
+
+# install nodejs
+sudo yum install -y nodejs
+
+# install nodejs
+# first install nvm
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.2/install.sh | bash
+
+sudo yum install -y nodejs
+sudo npm install -g yarn
+
+# install EPEL repository
+wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+sudo rpm -ivh epel-release-latest-7.noarch.rpm
+sudo yum-config-manager --enable epel
+
+# install xclip
+sudo yum install xclip -y
+
+# installing google chrome
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+sudo yum -y localinstall google-chrome-stable_current_x86_64.rpm
+
+# install webstorm
+wget https://download.jetbrains.com/webstorm/WebStorm-2019.3.1.tar.gz?_ga=2.152222394.2071077531.1577951147-1406956725.1577951147
+gunzip ^^^
+mv ^^^ ~/Apps
+# add ~/Apps/^^^/bin to $PATH
+echo <<<"EOF"
+-Xms1024m
+-Xmx2048m
+EOF > ~/WebStorm2019.3/config/webstorm.vmoptions
+
+# increase inotify size limit
+sudo sysctl fs.inotify.max_user_watches=582222 && sudo sysctl -p
+
+# generate communication keys
+mkdir ~/.ssh
+chmod 0700 ~/.ssh
+ssh-keygen
+
+# install z utility
+cd ~/Apps
+git clone https://github.com/rupa/z.git
+echo . ~/Apps/z/s.sh | tee -a ~/.bashrc ~/.zshrc 
+
+# install fish shell
+sudo yum-config-manager --add-repo https://download.opensuse.org/repositories/shells:fish:release:2/CentOS_7/shells:fish:release:2.repo
+sudo yum --disablerepo=epel install fish

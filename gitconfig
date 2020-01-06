@@ -1,0 +1,39 @@
+# This is Git's per-user configuration file.
+[user]
+	name = xxx
+	email = yyy
+[core]
+	autocrlf = input
+[alias]
+	f = fetch
+	# updates your branch with upstream (if fast-forward is possible)
+	ff = !git merge --ff-only ${git rev-parse --symbolic-full-name --abbrev-ref=strict HEAD@{u}}
+	fp = fetch --prune
+	st = status
+	cm = commit
+	cma = commit --amend
+	br = branch
+	co = checkout
+	cp = cherry-pick
+	df = diff
+	rb = rebase
+	rbi = rebase -i
+	rbc = rebase --continue
+	rh = reset --hard
+	su = submodule update
+	# graph for current branch
+	l = log --graph --decorate --pretty=oneline --abbrev-commit
+	# graph for all branches
+	ll = log --graph --decorate --pretty=oneline --abbrev-commit --all
+	# log for current branch showing summary of changed files (-m is for showing mergecommits too)
+	ls = log --stat -m
+	# number of commits for each person
+	stats = shortlog -n -s --no-merges
+	# remove remote branch (remote must be named origin), usage: git rmb test
+	rmb = !sh -c 'git push origin :$1' -
+	# shows local > tracked remote
+	brt = for-each-ref --format\"%(refname:short) > %(upstream:short)\" refs/heads
+	# commit all changes to WIP commit
+	wip = !git add --A && git commit -m "WIP"
+[rerere]
+	enabled = true
