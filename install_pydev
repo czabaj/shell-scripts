@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+function ask_yes_or_no() {
+	while true; do
+		read -p "$1 (y/n): " choice
+		case "$choice" in
+			y|Y ) return 0 ;;
+			n|N ) return 1 ;;
+			* ) echo "invalid choice";;
+		esac
+	done
+}
+
+if ! which python3 &>/dev/null; then
+	echo "You must install python 3 prior installing pydev"
+	exit 1
+fi
+
+if ! which pip3 &>/dev/null; then
+	echo "You must install pip prior installing pydev"
+	exit 1
+fi
+
+pip3 install --user --upgrade developers-chamber
+
+if ask_yes_or_no "Install shell completion for bash"; then
+	pydev init-completion
+else
+	echo "You can install completion manually later with"
+	echo "$ pydev init-completion"
+fi
+
+
