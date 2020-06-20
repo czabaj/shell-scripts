@@ -2,28 +2,26 @@
 
 function humanise {
     local size_in_bytes=$1
-    echo -e $size_in_bytes | awk '  function human(x) {
-                            if (x<1000) {return x} else {x/=1024}
-                            s="kMGTEPZY";
-                            while (x>=1000 && length(s)>1)
-                                {x/=1024; s=substr(s,2)}
-                            return int(x+0.5) substr(s,1,1)
-                        }
-                        {print human($0)}'
+    echo -e $size_in_bytes | awk '
+function human(x) {
+    if (x<1000) {return x} else {x/=1024}
+    s="kMGTEPZY";
+    while (x>=1000 && length(s)>1)
+        {x/=1024; s=substr(s,2)}
+    return int(x+0.5) substr(s,1,1)
+}
+{print human($0); exit}
+'
 }
 
 function dehumanise {
     local human_deadable_size=$1
-    echo -e $human_deadable_size | awk '/[0-9]$/{print $1;next};/[mM]$/{printf "%u\n", $1*(1024*1024);next};/[kK]$/{printf "%u\n", $1*1024;next}'
-}
-
-function commit_size {
-    local commit_sha=$1
-    git diff-tree -r -c -M -C --no-commit-id "$commit_sha" \
-        | cut -d ' ' -f4 \
-        | grep -v 0000000000000000000000000000000000000000 \
-        | git cat-file --batch-check=$git_cat_file_format \
-        | awk '{sum+=$1} END {print sum}'
+    echo -e $human_deadable_size | awk '
+/[0-9][bB]?$/ {print $1 ;next}
+/[0-9][kK]$/  {printf "%u\n", $1*1024; next}
+/[0-9][mM]$/  {printf "%u\n", $1*(1024*1024); next}
+/[0-9][gG]$/  {printf "%u\n", $1*(1024*1024*1024); next}
+'
 }
 
 
@@ -78,6 +76,15 @@ done
 if [ ! -z "$output_file" ]; then
     echo '' > $output_file
 fi
+
+function commit_size {
+    local commit_sha=$1
+    git diff-tree -r -c -M -C --no-commit-id "$commit_sha" \
+        | cut -d ' ' -f4 \
+        | grep -v 0000000000000000000000000000000000000000 \
+        | git cat-file --batch-check=$git_cat_file_format \
+        | awk '{sum+=$1} END {print sum}'
+}
 
 # this is sometimes needed, is restored in the end
 orig_diff_rename_limit=$(git config diff.renameLimit)
